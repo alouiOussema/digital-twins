@@ -1,0 +1,10 @@
+services:
+  
+  app:
+    build: .                            # builds the image from our Dockerfile
+    env_file: .env
+    volumes:
+      - .:/app                          # your project folder, shared live with the container
+    ports:
+      - "8501:8501"                     # Streamlit dashboard, for later
+    command: sleep infinity             # keeps the container running so we can work inside it

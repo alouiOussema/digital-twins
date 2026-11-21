@@ -1,0 +1,75 @@
+# ---------------------------------------------------------------
+# Configuration of the digital twin.
+# Every module reads this file: change values here, not in the code.
+# Passwords do NOT go here: they stay in .env
+# ---------------------------------------------------------------
+
+# Study area (bounding box, in degrees).
+# Default: Cergy-Préfecture. Replace with the area the team chooses.
+area:
+  name: Cergy-Prefecture
+  south: 49.034678
+  west: 2.084355
+  north: 49.037731
+  east: 2.076175
+
+# Where scripts write the files they generate (ignored by Git)
+paths:
+  generated: generated
+  city_map: generated/city_map
+
+# Ground traffic (SUMO)
+traffic:
+  sim_duration_s: 3600        # simulated duration: 1 hour
+  stats_interval_s: 300       # traffic summarized every 5 minutes
+  random_seed: 42             # same seed = same results every run
+  # One new vehicle every X seconds. Smaller = more traffic.
+  # Starting values: tuned in step 12 until peak hour looks congested,
+  # but not completely blocked.
+  vehicle_every_s:
+    offpeak: 3.0
+    peak: 1.0
+
+# Drones
+drones:
+  cruise_speed_ms: 15         # about 54 km/h
+  cruise_altitude_m: 60       # EU rules cap most drone flights at 120 m
+  takeoff_landing_s: 30       # duration of each vertical phase
+  max_range_m: 10000          # the round trip must fit in this distance
+  max_payload_kg: 2.5
+  position_log_every_s: 5     # how often a drone's position is saved
+
+  # Take-off and landing bases (placeholders: check them on the map)
+  hubs:
+    - {id: HUB_A, lat: 49.0365, lon: 2.0640}
+    - {id: HUB_B, lat: 49.0340, lon: 2.0790}
+
+  # Circles the drones must avoid (placeholder)
+  no_fly_zones:
+    - {id: NFZ_1, lat: 49.0360, lon: 2.0715, radius_m: 250}
+
+  # Missions used by scenarios S2 and S3 (placeholders)
+  missions:
+    - {id: M001, type: parcel,    hub: HUB_A, lat: 49.0395, lon: 2.0755, payload_kg: 1.2, depart_s: 120}
+    - {id: M002, type: medical,   hub: HUB_B, lat: 49.0312, lon: 2.0660, payload_kg: 0.8, depart_s: 300}
+    - {id: M003, type: parcel,    hub: HUB_A, lat: 49.0330, lon: 2.0720, payload_kg: 2.0, depart_s: 600}
+    - {id: M004, type: emergency, hub: HUB_B, lat: 49.0410, lon: 2.0690, payload_kg: 1.5, depart_s: 900}
+    - {id: M005, type: parcel,    hub: HUB_A, lat: 49.0380, lon: 2.0810, payload_kg: 3.0, depart_s: 1200}
+
+# The three scenarios required by the brief
+scenarios:
+  S1_ground_only:
+    description: Conventional ground transport, no drones
+    traffic: peak
+    drones: false
+    ai_routing: false
+  S2_ground_drones:
+    description: Ground transport plus drone parcel delivery
+    traffic: peak
+    drones: true
+    ai_routing: false
+  S3_ai_optimized:
+    description: AI traffic prediction and optimized ground-air mobility
+    traffic: peak
+    drones: true
+    ai_routing: true
